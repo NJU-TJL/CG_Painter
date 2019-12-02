@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CG_PainterClass</class>
+ <widget class="QMainWindow" name="CG_PainterClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1121</width>
+    <height>657</height>
+   </rect>
+  </property>
+  <property name="mouseTracking">
+   <bool>true</bool>
+  </property>
+  <property name="windowTitle">
+   <string>CG_Painter</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="mouseTracking">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1121</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>直线</string>
+    </property>
+    <addaction name="actionLineDDA"/>
+    <addaction name="actionLineBresenham"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>多边形</string>
+    </property>
+    <addaction name="actionPolygonDDA"/>
+    <addaction name="actionPolygonBresenham"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionLineDDA">
+   <property name="text">
+    <string>DDA</string>
+   </property>
+   <property name="toolTip">
+    <string>使用DDA算法画直线（鼠标左键单击选择直线的两个端点，右键取消）</string>
+   </property>
+   <property name="statusTip">
+    <string>使用DDA算法画直线（鼠标左键单击选择直线的两个端点，右键取消）</string>
+   </property>
+   <property name="whatsThis">
+    <string>使用DDA算法画直线（鼠标左键单击选择直线的两个端点，右键取消）</string>
+   </property>
+  </action>
+  <action name="actionLineBresenham">
+   <property name="text">
+    <string>Bresenham</string>
+   </property>
+   <property name="toolTip">
+    <string>使用Bresenham算法绘制直线（鼠标左键单击选择直线的两个端点，右键取消）</string>
+   </property>
+   <property name="statusTip">
+    <string>使用Bresenham算法绘制直线（鼠标左键单击选择直线的两个端点，右键取消）</string>
+   </property>
+   <property name="whatsThis">
+    <string>使用Bresenham算法绘制直线（鼠标左键单击选择直线的两个端点，右键取消）</string>
+   </property>
+  </action>
+  <action name="actionPolygonDDA">
+   <property name="text">
+    <string>DDA</string>
+   </property>
+   <property name="toolTip">
+    <string>使用DDA算法绘制多边形（鼠标左键单击确定顶点，靠近起点可自动贴合，右键取消）</string>
+   </property>
+   <property name="statusTip">
+    <string>使用DDA算法绘制多边形（鼠标左键单击确定顶点，靠近起点可自动贴合，右键取消）</string>
+   </property>
+   <property name="whatsThis">
+    <string>使用DDA算法绘制多边形（鼠标左键单击确定顶点，靠近起点可自动贴合，右键取消）</string>
+   </property>
+  </action>
+  <action name="actionPolygonBresenham">
+   <property name="text">
+    <string>Bresenham</string>
+   </property>
+   <property name="toolTip">
+    <string>使用Bresenham算法绘制多边形（鼠标左键单击确定顶点，靠近起点可自动贴合，右键取消）</string>
+   </property>
+   <property name="statusTip">
+    <string>使用Bresenham算法绘制多边形（鼠标左键单击确定顶点，靠近起点可自动贴合，右键取消）</string>
+   </property>
+   <property name="whatsThis">
+    <string>使用Bresenham算法绘制多边形（鼠标左键单击确定顶点，靠近起点可自动贴合，右键取消）</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="CG_Painter.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionLineDDA</sender>
+   <signal>triggered()</signal>
+   <receiver>CG_PainterClass</receiver>
+   <slot>state_to_lineDDA()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>299</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLineBresenham</sender>
+   <signal>triggered()</signal>
+   <receiver>CG_PainterClass</receiver>
+   <slot>state_to_lineBresenham()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>299</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPolygonDDA</sender>
+   <signal>triggered()</signal>
+   <receiver>CG_PainterClass</receiver>
+   <slot>state_to_polygonDDA()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>299</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPolygonBresenham</sender>
+   <signal>triggered()</signal>
+   <receiver>CG_PainterClass</receiver>
+   <slot>state_to_polygonBresenham()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>299</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>state_to_lineDDA()</slot>
+  <slot>state_to_lineBresenham()</slot>
+  <slot>state_to_polygonDDA()</slot>
+  <slot>state_to_polygonBresenham()</slot>
+ </slots>
+</ui>
