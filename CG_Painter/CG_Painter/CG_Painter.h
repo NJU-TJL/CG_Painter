@@ -2,6 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QLabel>
+#include <QColorDialog>
 #include "ui_CG_Painter.h"
 #include "canvas.h"
 
@@ -22,6 +23,7 @@ private:
 	Canvas myCanvas;
 	Canvas bufCanvas;
 	bool buf_flag = false;
+	QColor nowColor=Qt::black;
 
 	//表示当前状态：画直线、多边形、椭圆
 	enum PAINTER_STATE {
@@ -80,13 +82,15 @@ private:
 	enum TRANS_STATE { TRANS_NON, TRANS_BEGIN};
 	TRANS_STATE trans_state = TRANS_NON;
 	
-
-
 	//ID管理
 	int ID_Counter = 0;
 	int getNewID();
 
 private slots:
+	void action_to_set_color() {
+		nowColor = QColorDialog::getColor(Qt::black,this,u8"绘图颜色选择");
+		myCanvas.setColor(nowColor);
+	}
 	void state_to_lineDDA() { setState(DRAW_LINE); setAlgo(DDA); }
 	void state_to_lineBresenham() { setState(DRAW_LINE); setAlgo(BRESENHAM); }
 	void state_to_polygonDDA() { setState(DRAW_POLYGON); setAlgo(DDA); }

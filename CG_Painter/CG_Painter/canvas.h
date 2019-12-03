@@ -25,6 +25,7 @@ public:
 
 	//设置当前画笔颜色
 	void setColor(int r, int g, int b);
+	void setColor(QColor icolor) { color = icolor; }
 	//将当前所有图元输出到画布，且跳过超出画布边界的点
 	void getIamge(QImage *image);
 

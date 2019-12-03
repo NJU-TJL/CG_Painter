@@ -53,6 +53,13 @@
     <addaction name="actionPolygonDDA"/>
     <addaction name="actionPolygonBresenham"/>
    </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>开始</string>
+    </property>
+    <addaction name="actionColor"/>
+   </widget>
+   <addaction name="menu_3"/>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
   </widget>
@@ -111,6 +118,20 @@
    </property>
    <property name="whatsThis">
     <string>使用Bresenham算法绘制多边形（鼠标左键单击确定顶点，靠近起点可自动贴合，右键取消）</string>
+   </property>
+  </action>
+  <action name="actionColor">
+   <property name="text">
+    <string>颜色设置</string>
+   </property>
+   <property name="toolTip">
+    <string>设置画笔颜色</string>
+   </property>
+   <property name="statusTip">
+    <string>设置画笔颜色</string>
+   </property>
+   <property name="whatsThis">
+    <string>设置画笔颜色</string>
    </property>
   </action>
  </widget>
@@ -183,11 +204,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionColor</sender>
+   <signal>triggered()</signal>
+   <receiver>CG_PainterClass</receiver>
+   <slot>action_to_set_color()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>560</x>
+     <y>328</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>state_to_lineDDA()</slot>
   <slot>state_to_lineBresenham()</slot>
   <slot>state_to_polygonDDA()</slot>
   <slot>state_to_polygonBresenham()</slot>
+  <slot>action_to_set_color()</slot>
  </slots>
 </ui>
