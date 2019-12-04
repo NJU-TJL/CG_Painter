@@ -58,6 +58,8 @@
      <string>开始</string>
     </property>
     <addaction name="actionColor"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave"/>
    </widget>
    <addaction name="menu_3"/>
    <addaction name="menu"/>
@@ -132,6 +134,20 @@
    </property>
    <property name="whatsThis">
     <string>设置画笔颜色</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>保存图片</string>
+   </property>
+   <property name="toolTip">
+    <string>将当前画布保存为.bmp文件</string>
+   </property>
+   <property name="statusTip">
+    <string>将当前画布保存为.bmp文件</string>
+   </property>
+   <property name="whatsThis">
+    <string>将当前画布保存为.bmp文件</string>
    </property>
   </action>
  </widget>
@@ -220,6 +236,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionSave</sender>
+   <signal>triggered()</signal>
+   <receiver>CG_PainterClass</receiver>
+   <slot>action_to_save()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>560</x>
+     <y>328</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>560</x>
+     <y>328</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>state_to_lineDDA()</slot>
@@ -227,5 +259,6 @@
   <slot>state_to_polygonDDA()</slot>
   <slot>state_to_polygonBresenham()</slot>
   <slot>action_to_set_color()</slot>
+  <slot>action_to_save()</slot>
  </slots>
 </ui>

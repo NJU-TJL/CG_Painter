@@ -6,7 +6,7 @@ CG_Painter::CG_Painter(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
-
+	
 	//增加绘制椭圆的Action
 	QAction* actionEllipse = new QAction(tr(u8"椭圆"));
 	actionEllipse->setStatusTip(tr(u8"绘制椭圆（鼠标左键单击产生椭圆，左键按下拖动改变大小，双击左键确定并退出，按下右键取消绘制）"));

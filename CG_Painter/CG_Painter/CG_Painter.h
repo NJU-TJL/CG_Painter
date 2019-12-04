@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QLabel>
 #include <QColorDialog>
+#include <QFileDialog>
 #include "ui_CG_Painter.h"
 #include "canvas.h"
 
@@ -90,6 +91,14 @@ private slots:
 	void action_to_set_color() {
 		nowColor = QColorDialog::getColor(Qt::black,this,u8"绘图颜色选择");
 		myCanvas.setColor(nowColor);
+	}
+	void action_to_save() {
+		QString filename = QFileDialog::getSaveFileName(this, u8"保存路径选择", ".", u8"图片 (*.bmp)");
+		if (!filename.isNull()) {
+			QImage *image = new QImage(geometry().width(), geometry().height(), QImage::Format_RGB888);
+			myCanvas.getIamge(image);
+			(*image).save(filename);
+		}
 	}
 	void state_to_lineDDA() { setState(DRAW_LINE); setAlgo(DDA); }
 	void state_to_lineBresenham() { setState(DRAW_LINE); setAlgo(BRESENHAM); }
