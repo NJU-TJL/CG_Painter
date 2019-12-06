@@ -179,6 +179,23 @@ void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 				update();
 			}
 		}
+		else if(event->button() == Qt::RightButton){
+			//正常状态下，右键单击，弹出菜单
+			selected_ID = myCanvas.getID(x, y);
+			if (selected_ID != -1) {
+				//TODO:右键菜单
+				//删除图元Action
+				QAction* actionDelete = new QAction(tr(u8"删除"));
+				actionDelete->setStatusTip(tr(u8"删除此图元"));
+				connect(actionDelete, &QAction::triggered, this, &CG_Painter::action_to_delete);
+
+				QMenu menu;
+				//添加菜单项
+				menu.addAction(actionDelete);
+				//在鼠标位置显示
+				menu.exec(QCursor::pos());
+			}
+		}
 	}
 	
 

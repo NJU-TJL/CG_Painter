@@ -32,6 +32,11 @@ protected:
 	friend class Canvas;
 public:
 	PixelSet(int i = 0, QColor icolor = Qt::black) { id = i; color = icolor; }
+	PixelSet(const PixelSet& B) {
+		id = B.id; color = B.color; type = B.type;
+		points.clear();
+		points.assign(B.points.begin(), B.points.end());
+	}
 	//设定图元ID
 	void setID(int i) { id = i; }
 	//设定图元颜色

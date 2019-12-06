@@ -137,6 +137,27 @@ int Canvas::getID(int x, int y)
 	return res_ID;
 }
 
+void Canvas::delID(int id)
+{
+	for (auto it = pixelsets.begin(); it != pixelsets.end();) {
+		if ((*it)->id == id) {
+			//delete (*it);
+			//it = pixelsets.erase(it);
+			return;
+		}
+		else {
+			++it;
+		}
+
+		//if ((*it)->id == id) {
+		//	delete (*it);
+		//	pixelsets.erase(it);
+		//	return;
+		//}
+	}
+	return;
+}
+
 void Canvas::drawLine(int id, int x1, int y1, int x2, int y2, ALGORITHM algorithm)
 {
 	

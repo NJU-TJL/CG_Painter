@@ -83,6 +83,9 @@ private:
 	enum TRANS_STATE { TRANS_NON, TRANS_BEGIN};
 	TRANS_STATE trans_state = TRANS_NON;
 	
+	/*选中*/
+	int selected_ID;
+
 	//ID管理
 	int ID_Counter = 0;
 	int getNewID();
@@ -100,10 +103,15 @@ private slots:
 			(*image).save(filename);
 		}
 	}
+	void action_to_delete() {
+		myCanvas.delID(selected_ID);
+		update();
+	}
 	void state_to_lineDDA() { setState(DRAW_LINE); setAlgo(DDA); }
 	void state_to_lineBresenham() { setState(DRAW_LINE); setAlgo(BRESENHAM); }
 	void state_to_polygonDDA() { setState(DRAW_POLYGON); setAlgo(DDA); }
 	void state_to_polygonBresenham() { setState(DRAW_POLYGON); setAlgo(BRESENHAM); }
 	void state_to_ellipse() { 
 		setState(DRAW_ELLIPSE); }
+
 };

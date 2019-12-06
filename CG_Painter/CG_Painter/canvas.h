@@ -53,6 +53,9 @@ public:
 	//查看指定某点是否对应于某个图元ID，是则返回ID，否则返回-1；
 	int CLICK_BIAS = 4; //允许的误差范围（圆形区域的半径）
 	int getID(int x, int y);
+
+	//删除指定ID的图元
+	void delID(int id);
 		
 };
 
