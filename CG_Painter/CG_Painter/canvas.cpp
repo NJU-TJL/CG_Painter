@@ -7,9 +7,10 @@ using namespace std;
 
 Canvas::~Canvas()
 {
-	foreach(const PixelSet* var, pixelsets) {
-		delete var;
+	for (int i = 0; i < pixelsets.size(); i++) {
+		delete pixelsets[i];
 	}
+	pixelsets.clear();
 }
 
 Canvas::Canvas(const Canvas & B)
@@ -76,6 +77,9 @@ void Canvas::setColor(int r, int g, int b)
 void Canvas::getIamge(QImage *image)
 {
 	image->fill(Qt::white);
+	//for (auto i = pixelsets.begin(); i != pixelsets.end(); i++) {
+	//	(*i)->paint(image);
+	//}
 	foreach(const PixelSet* var, pixelsets) {
 		var->paint(image);
 	}

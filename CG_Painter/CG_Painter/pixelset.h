@@ -65,6 +65,12 @@ class Line :public PixelSet
 	string algorithm;
 public:
 	Line() { type = LINE; }
+	Line(const Line& B) :PixelSet(B) { 
+		x1 = B.x1; 
+		y1 = B.y1;
+		x2 = B.x2;
+		y2 = B.y2;
+	}
 	Line(int ix1, int iy1, int ix2, int iy2, string ialgorithm) {
 		type = LINE;
 		set(ix1, iy1, ix2, iy2, ialgorithm);
@@ -94,6 +100,12 @@ class Polygon :public PixelSet
 	bool polygon_closed = true;
 public:
 	Polygon() { type = POLYGON; }
+	Polygon(const Polygon& B) : PixelSet(B) {
+		vertexs.clear();
+		vertexs.assign(B.vertexs.begin(), B.vertexs.end());
+		algorithm = B.algorithm;
+		polygon_closed = B.polygon_closed;
+	}
 	Polygon(const vector<Point>& ivertexs, string ialgorithm) {
 		type = POLYGON;
 		set(ivertexs, ialgorithm);
@@ -121,6 +133,13 @@ class Ellipse :public PixelSet
 	int r = 0;
 public:
 	Ellipse() { type = ELLIPSE; }
+	Ellipse(const Ellipse& B):PixelSet(B) {
+		x = B.x; 
+		y = B.y;
+		rx = B.rx;
+		ry = B.ry;
+		r = B.r;
+	}
 	Ellipse(int ix, int iy, int irx, int iry) {
 		type = ELLIPSE;
 		set(ix, iy, irx, iry);
