@@ -70,6 +70,7 @@ public:
 		y1 = B.y1;
 		x2 = B.x2;
 		y2 = B.y2;
+		algorithm = B.algorithm;
 	}
 	Line(int ix1, int iy1, int ix2, int iy2, string ialgorithm) {
 		type = LINE;

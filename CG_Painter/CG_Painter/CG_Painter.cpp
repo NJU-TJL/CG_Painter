@@ -89,6 +89,7 @@ void CG_Painter::mousePressEvent(QMouseEvent * event)
 				trans_ID = myCanvas.getID(x, y);
 				if (trans_ID != -1) {
 					trans_ix = x; trans_iy = y;
+					bufCanvas = myCanvas;
 					trans_state = TRANS_BEGIN;
 				}
 			}

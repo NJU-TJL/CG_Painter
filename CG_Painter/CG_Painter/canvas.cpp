@@ -10,14 +10,13 @@ Canvas::~Canvas()
 	for (int i = 0; i < pixelsets.size(); i++) {
 		delete pixelsets[i];
 	}
-	pixelsets.clear();
 }
 
 Canvas::Canvas(const Canvas & B)
 {
 	if (this != &B) {
-		this->~Canvas();
 		color = B.color;
+		pixelsets.clear();
 		for (int i = 0; i < B.pixelsets.size(); i++) {
 			PixelSet *p=nullptr;
 			switch (B.pixelsets[i]->type)
@@ -43,8 +42,8 @@ Canvas::Canvas(const Canvas & B)
 const Canvas & Canvas::operator=(const Canvas & B)
 {
 	if (this != &B) {
-		this->~Canvas();
 		color = B.color;
+		pixelsets.clear();
 		for (int i = 0; i < B.pixelsets.size(); i++) {
 			PixelSet *p;
 			switch (B.pixelsets[i]->type)
@@ -77,9 +76,6 @@ void Canvas::setColor(int r, int g, int b)
 void Canvas::getIamge(QImage *image)
 {
 	image->fill(Qt::white);
-	//for (auto i = pixelsets.begin(); i != pixelsets.end(); i++) {
-	//	(*i)->paint(image);
-	//}
 	foreach(const PixelSet* var, pixelsets) {
 		var->paint(image);
 	}
@@ -145,19 +141,13 @@ void Canvas::delID(int id)
 {
 	for (auto it = pixelsets.begin(); it != pixelsets.end();) {
 		if ((*it)->id == id) {
-			//delete (*it);
-			//it = pixelsets.erase(it);
+			delete (*it);
+			it = pixelsets.erase(it);
 			return;
 		}
 		else {
 			++it;
 		}
-
-		//if ((*it)->id == id) {
-		//	delete (*it);
-		//	pixelsets.erase(it);
-		//	return;
-		//}
 	}
 	return;
 }
