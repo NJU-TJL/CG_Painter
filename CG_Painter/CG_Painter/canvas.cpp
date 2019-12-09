@@ -102,7 +102,7 @@ void Canvas::rotate(int id, int x, int y, int r)
 	}
 }
 
-void Canvas::scale(int id, int x, int y, float s)
+void Canvas::scale(int id, int x, int y, double s)
 {
 	for (auto i = pixelsets.begin(); i != pixelsets.end(); i++) {
 		if ((*i)->id == id) {

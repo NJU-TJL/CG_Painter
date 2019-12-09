@@ -46,7 +46,7 @@ public:
 	//将本图元绘制于画布上
 	virtual void paint(QImage *image);
 	//平移:(dx,dy)
-	void translate(int dx, int dy);
+	virtual void translate(int dx, int dy);
 	//根据参数绘制相应的图元
 	virtual void refresh() {}
 	//旋转
@@ -84,6 +84,12 @@ public:
 	}
 	//根据参数绘制图元
 	void refresh();
+	//平移
+	void translate(int dx, int dy) {
+		PixelSet::translate(dx, dy);
+		x1 += dx; y1 += dy;
+		x2 += dx; y2 += dy;
+	}
 	//旋转
 	void rotate(int x, int y, int r);
 	//缩放
@@ -118,6 +124,14 @@ public:
 	}
 	//根据参数绘制图元
 	void refresh();
+	//平移
+	void translate(int dx, int dy) {
+		PixelSet::translate(dx, dy);
+		for (int i = 0; i < vertexs.size(); i++) {
+			vertexs[i].x += dx;
+			vertexs[i].y += dy;
+		}
+	}
 	//旋转
 	void rotate(int x, int y, int r);
 	//缩放
@@ -154,6 +168,11 @@ public:
 	}
 	//根据参数绘制图元
 	void refresh();
+	//平移
+	void translate(int dx, int dy) {
+		PixelSet::translate(dx, dy);
+		x += dx; y += dy;
+	}
 	//旋转
 	void rotate(int ix, int iy, int ir); //绕点(ix,iy旋转)顺时针
 	void rotate(int ir); //绕自身中心旋转
@@ -176,6 +195,7 @@ public:
 	DotPoint(int ix, int iy, int iwidth = 5, QColor icolor = QColor(0xB2, 0xDF,0xEE)) {
 		x = ix; y = iy;
 		width = iwidth; color = icolor;
+		type = DOTPOINT;
 	}
 	//根据参数绘制图元
 	void paint(QImage *image);

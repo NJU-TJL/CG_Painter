@@ -29,7 +29,10 @@ void rotatePoint(int &x,int &y,int xr,int yr,int r);
 int getRotateR(int x1, int y1, int xr, int yr,int x2,int y2);
 
 //将某个点(x,y)以(sx,sy)为中心按s的比例缩放
-void scalePoint(int &x,int &y,int sx,int sy,float s);
+void scalePoint(int &x,int &y,int sx,int sy,double s);
+//(x1,y1)->(x2,y2)以(sx,sy)缩放  获得缩放比例s（返回值）
+double getScaleS(int x1, int y1, int sx, int sy, int x2, int y2);
+
 
 //裁剪
 //Cohen-Sutherland算法

@@ -28,7 +28,7 @@ private:
 
 	//表示当前状态：画直线、多边形、椭圆
 	enum PAINTER_STATE {
-		NOT_DRAWING, DRAW_LINE, DRAW_POLYGON, DRAW_ELLIPSE, DRAW_ROTATE
+		NOT_DRAWING, DRAW_LINE, DRAW_POLYGON, DRAW_ELLIPSE, DRAW_ROTATE, DRAW_SCALE
 	};
 	PAINTER_STATE state = NOT_DRAWING;
 	QString state_info = "";
@@ -91,7 +91,10 @@ private:
 	ROTATE_STATE rotate_state = ROTATE_NON;
 	int rotate_rx, rotate_ry;
 
-	/*辅助示意元素*/
+	/*旋转*/
+	enum SCALE_STATE { SCALE_NON, SCALE_READY, SCALE_BEGIN };
+	SCALE_STATE scale_state = SCALE_NON;
+	int scale_rx, scale_ry;
 
 	//ID管理
 	int ID_Counter = 0;
@@ -116,6 +119,9 @@ private slots:
 	}
 	void action_to_rotate() {
 		setState(DRAW_ROTATE);
+	}
+	void action_to_scale() {
+		setState(DRAW_SCALE);
 	}
 	void state_to_lineDDA() { setState(DRAW_LINE); setAlgo(DDA); }
 	void state_to_lineBresenham() { setState(DRAW_LINE); setAlgo(BRESENHAM); }

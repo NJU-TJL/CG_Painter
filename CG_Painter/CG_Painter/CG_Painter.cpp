@@ -2,6 +2,7 @@
 #include "algorithm.h"
 #include <QMouseEvent>
 #include <QPainter> 
+#include <QDebug>
 
 CG_Painter::CG_Painter(QWidget *parent)
 	: QMainWindow(parent)
@@ -19,6 +20,12 @@ CG_Painter::CG_Painter(QWidget *parent)
 	actionRotate->setStatusTip(tr(u8"【旋转图元】首先单击左键确定旋转中心，然后按住左键拖动图元旋转，右键退出"));
 	connect(actionRotate, &QAction::triggered, this, &CG_Painter::action_to_rotate);
 	ui.menuBar->addAction(actionRotate);
+
+	//缩放图元Action
+	QAction* actionScale = new QAction(tr(u8"缩放"));
+	actionScale->setStatusTip(tr(u8"【缩放图元】首先单击左键确定缩放中心，然后按住左键拖动图元缩放，右键退出"));
+	connect(actionScale, &QAction::triggered, this, &CG_Painter::action_to_scale);
+	ui.menuBar->addAction(actionScale);
 
 	//状态栏显示鼠标位置
 	statusLabel = new QLabel();
@@ -64,6 +71,11 @@ void CG_Painter::setState(PAINTER_STATE newState)
 		state_info = u8"状态：旋转图元 | ";
 		algo_info = "";
 		rotate_state = ROTATE_NON;
+		break;
+	case CG_Painter::DRAW_SCALE:
+		state_info = u8"状态：缩放图元 | ";
+		algo_info = "";
+		scale_state = SCALE_NON;
 		break;
 	default:
 		break;
@@ -120,6 +132,15 @@ void CG_Painter::mousePressEvent(QMouseEvent * event)
 				selected_ID = myCanvas.getID(x, y);
 				init_x = x; init_y = y;
 				rotate_state = ROTATE_BEGIN;
+			}
+		}
+	}
+	else if (state == DRAW_SCALE) {
+		if (event->button() == Qt::LeftButton) {
+			if (scale_state == SCALE_READY && myCanvas.getID(x, y) != -1) {
+				selected_ID = myCanvas.getID(x, y);
+				init_x = x; init_y = y;
+				scale_state = SCALE_BEGIN;
 			}
 		}
 	}
@@ -202,6 +223,17 @@ void CG_Painter::mouseMoveEvent(QMouseEvent * event)
 			update();
 		}
 	}
+	else if (state == DRAW_SCALE) {
+		if (scale_state == SCALE_BEGIN && (event->buttons() & Qt::LeftButton)) {
+			double s = getScaleS(init_x, init_y, scale_rx, scale_ry, x, y);
+			bufCanvas = myCanvas;
+			bufCanvas.drawDotPoint(-1, scale_rx, scale_ry);
+			bufCanvas.scale(selected_ID, scale_rx, scale_ry, s);
+			buf_flag = true;
+			update();
+		}
+	}
+	
 
 	refreshStateLabel();
 }
@@ -251,7 +283,6 @@ void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 		}
 	}
 	
-
 	if (state == DRAW_LINE) {
 		if (event->button() == Qt::LeftButton) {
 			if (line_state == LINE_NON_POINT) {
@@ -323,6 +354,22 @@ void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 			}
 		}
 	}
+	else if (state == DRAW_SCALE) {
+		if (event->button() == Qt::LeftButton) {
+			if (scale_state == SCALE_NON) {
+				scale_rx = x; scale_ry = y;
+				scale_state = SCALE_READY;
+				bufCanvas = myCanvas;
+				bufCanvas.drawDotPoint(-1, scale_rx, scale_ry);
+				buf_flag = true;
+				update();
+			}
+			else if (scale_state == SCALE_BEGIN) {
+				scale_state = SCALE_READY;
+				myCanvas = bufCanvas;
+			}
+		}
+	}
 	
 	refreshStateLabel();
 }
@@ -344,25 +391,6 @@ void CG_Painter::mouseDoubleClickEvent(QMouseEvent * event)
 	}
 }
 
-QImage* createImageWithOverlay(const QImage& baseImage, const QImage& overlayImage)
-{
-	QImage *imageWithOverlay = new QImage(baseImage.size(), QImage::Format_ARGB32_Premultiplied);
-	QPainter painter(imageWithOverlay);
-
-	painter.setCompositionMode(QPainter::CompositionMode_Source);
-	painter.fillRect(imageWithOverlay->rect(), Qt::transparent);
-
-	painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-	painter.drawImage(0, 0, baseImage);
-
-	painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-	painter.drawImage(0, 0, overlayImage);
-
-	painter.end();
-
-	return imageWithOverlay;
-}
-
 void CG_Painter::paintEvent(QPaintEvent * event)
 {
 	QPainter paint(this);
@@ -371,27 +399,6 @@ void CG_Painter::paintEvent(QPaintEvent * event)
 		image = new QImage(geometry().width(), geometry().height(), QImage::Format_RGB888);
 		myCanvas.getIamge(image);
 	}
-	//else if (buf_flag && state == DRAW_ROTATE && (rotate_state == ROTATE_READY || rotate_state == ROTATE_BEGIN)) {
-		//方案一：
-		//绘制辅助点等信息
-		//QImage *helpImage = new QImage(geometry().width(), geometry().height(), QImage::Format_ARGB32_Premultiplied);
-		//QPainter helpPainter(helpImage);
-		//QPen helpPen(Qt::black); helpPen.setWidth(5);
-		//helpPainter.setPen(helpPen);
-		//helpPainter.drawPoint(rotate_rx, rotate_ry);
-		////叠加QImage
-		//QImage *bufImage = new QImage(geometry().width(), geometry().height(), QImage::Format_RGB888);
-		//bufCanvas.getIamge(bufImage);
-		//image = createImageWithOverlay(*bufImage, *helpImage);
-
-		//方案二：
-		//QPainter helpPainter(this);
-		//QPen helpPen(Qt::black); helpPen.setWidth(5);
-		//helpPainter.setPen(helpPen);
-		//helpPainter.drawPoint(rotate_rx, rotate_ry);
-		//image = new QImage(geometry().width(), geometry().height(), QImage::Format_RGB888);
-		//bufCanvas.getIamge(image);
-	//}
 	else {
 		image = new QImage(geometry().width(), geometry().height(), QImage::Format_RGB888);
 		bufCanvas.getIamge(image);

@@ -1,6 +1,7 @@
 #include "pixelset.h"
 #include "algorithm.h"
 
+#include <QDebug>
 #include <QPainter> 
 
 void PixelSet::paint(QImage *image)

@@ -48,7 +48,7 @@ public:
 	void rotate(int id, int x, int y, int r);
 
 	//指定id的图元缩放
-	void scale(int id, int x, int y, float s);
+	void scale(int id, int x, int y, double s);
 
 	//指定id的图元裁剪
 	void clip(int id, int x1, int y1, int x2, int y2, string algorithm);
