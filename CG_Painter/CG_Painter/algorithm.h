@@ -24,7 +24,9 @@ void drawEllipse(int x,int y,int rx,int ry, PixelSet& myset);
 
 
 //将某个点(x,y)绕(xr,yr)旋转r°角
-void rotatePoint(int &x,int &y,int xr,int xy,int r);
+void rotatePoint(int &x,int &y,int xr,int yr,int r);
+//(x1,y1)->(x2,y2)绕(xr,yr)  获得旋转的角度r°（返回值）
+int getRotateR(int x1, int y1, int xr, int yr,int x2,int y2);
 
 //将某个点(x,y)以(sx,sy)为中心按s的比例缩放
 void scalePoint(int &x,int &y,int sx,int sy,float s);

@@ -1,7 +1,8 @@
 #include"algorithm.h"
 #include"pixelset.h"
-
+#include<qdebug.h>
 #include<assert.h>
+#include<math.h>
 #include<algorithm>
 
 //画一条直线-DDA算法
@@ -240,6 +241,22 @@ void rotatePoint(int &x, int &y, int xr, int yr, int r)
     y2=qRound(x1*sin(theta)+y1*cos(theta));
     x=x2+xr;
     y=y2+yr;
+}
+//利用数学公式 cos=(a2+b2-c2)/2ab（c为对边）
+int getRotateR(int x1, int y1, int xr, int yr, int x2, int y2)
+{
+	x1 = x1 - xr;
+	y1 = y1 - xr;
+	x2 = x2 - xr;
+	y2 = y2 - xr;
+	double a2 = x1 * x1 + y1 * y1;
+	double b2 = x2 * x2 + y2 * y2;
+	double c2 = (x1-x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+	double cos_temp = (a2 + b2 - c2) / (2 * sqrt(a2)*sqrt(b2));
+	double theta = acos(cos_temp);
+	if (x1*y2 < x2*y1) theta = -theta;
+	int r = qRound(theta * 180 / PI);
+	return r;
 }
 
 void scalePoint(int &x, int &y, int sx, int sy, float s)

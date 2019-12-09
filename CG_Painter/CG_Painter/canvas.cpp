@@ -33,8 +33,8 @@ Canvas::Canvas(const Canvas & B)
 			default:
 				break;
 			}
-			assert(p != nullptr);
-			pixelsets.push_back(p);
+			if (p != nullptr)
+				pixelsets.push_back(p);
 		}
 	}
 }
@@ -45,6 +45,7 @@ const Canvas & Canvas::operator=(const Canvas & B)
 		color = B.color;
 		pixelsets.clear();
 		for (int i = 0; i < B.pixelsets.size(); i++) {
+			//TODO:图元复制
 			PixelSet *p;
 			switch (B.pixelsets[i]->type)
 			{
@@ -61,8 +62,8 @@ const Canvas & Canvas::operator=(const Canvas & B)
 				p = nullptr;
 				break;
 			}
-			assert(p != nullptr);
-			pixelsets.push_back(p);
+			if (p!=nullptr)
+				pixelsets.push_back(p);
 		}
 	}
 	return *this;
@@ -76,8 +77,8 @@ void Canvas::setColor(int r, int g, int b)
 void Canvas::getIamge(QImage *image)
 {
 	image->fill(Qt::white);
-	foreach(const PixelSet* var, pixelsets) {
-		var->paint(image);
+	for (int i = 0; i < pixelsets.size(); i++) {
+		pixelsets[i]->paint(image);
 	}
 }
 
@@ -212,5 +213,12 @@ void Canvas::drawEllipse(int id, int x, int y, int rx, int ry)
 	p->refresh();
 	p->setID(id);
 	p->setColor(color);
+	pixelsets.push_back(p);
+}
+
+void Canvas::drawDotPoint(int id, int x, int y, int iwidth, QColor icolor)
+{
+	PixelSet *p = new DotPoint(x, y, iwidth, icolor);
+	p->setID(id);
 	pixelsets.push_back(p);
 }

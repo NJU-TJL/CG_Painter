@@ -1,7 +1,9 @@
 #include "pixelset.h"
 #include "algorithm.h"
 
-void PixelSet::paint(QImage *image) const
+#include <QPainter> 
+
+void PixelSet::paint(QImage *image)
 {
 	int x = image->size().width();
 	int y = image->size().height();
@@ -118,4 +120,14 @@ void Ellipse::scale(int ix, int iy, float s)
 	rx = qRound(rx*s);
 	ry = qRound(ry*s);
 	refresh();
+}
+
+void DotPoint::paint(QImage * image)
+{
+	QPainter myPainter(image);
+	QPen myPen(color);
+	myPen.setWidth(width);
+	myPen.setCapStyle(Qt::RoundCap);
+	myPainter.setPen(myPen);
+	myPainter.drawPoint(x, y);
 }

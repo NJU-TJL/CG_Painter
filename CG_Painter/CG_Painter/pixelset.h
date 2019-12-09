@@ -17,7 +17,7 @@ public:
 
 enum PS_TYPE
 {
-	LINE, POLYGON, ELLIPSE
+	LINE, POLYGON, ELLIPSE, DOTPOINT
 };
 
 //表示像素点集合的类，即表示一个图元
@@ -44,15 +44,15 @@ public:
 	//增加一个指定坐标的像素点
 	void add(int x, int y) { points.push_back(Point(x, y)); }
 	//将本图元绘制于画布上
-	void paint(QImage *image) const;
+	virtual void paint(QImage *image);
 	//平移:(dx,dy)
 	void translate(int dx, int dy);
 	//根据参数绘制相应的图元
-	virtual void refresh() = 0;
+	virtual void refresh() {}
 	//旋转
-	virtual void rotate(int x, int y, int r) = 0;
+	virtual void rotate(int x, int y, int r) {}
 	//缩放
-	virtual void scale(int x, int y, float s) = 0;
+	virtual void scale(int x, int y, float s) {}
 	//裁剪
 	virtual void clip(int x1, int y1, int x2, int y2, string algorithm) {}
 };
@@ -159,6 +159,26 @@ public:
 	void rotate(int ir); //绕自身中心旋转
 	//缩放
 	void scale(int x, int y, float s);
+};
+
+//示意点
+class DotPoint :public PixelSet {
+	//点所在的位置
+	int x, y;
+	//宽度
+	int width;
+public:
+	DotPoint() { type = DOTPOINT; }
+	DotPoint(const DotPoint& B) :PixelSet(B) {
+		x = B.x; y = B.y;
+		width = B.width;
+	}
+	DotPoint(int ix, int iy, int iwidth = 5, QColor icolor = QColor(0xB2, 0xDF,0xEE)) {
+		x = ix; y = iy;
+		width = iwidth; color = icolor;
+	}
+	//根据参数绘制图元
+	void paint(QImage *image);
 };
 
 #endif // PIXELSET_H

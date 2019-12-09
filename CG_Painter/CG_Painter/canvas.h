@@ -38,6 +38,9 @@ public:
 	//画椭圆-中点椭圆生成算法
 	void drawEllipse(int id, int x, int y, int rx, int ry);
 
+	//画一个实心点（用于辅助示意）
+	void drawDotPoint(int id, int x, int y, int iwidth = 10, QColor icolor = QColor(0x32, 0xCD, 0x32));
+
 	//指定id的图元平移
 	void translate(int id, int dx, int dy);
 

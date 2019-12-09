@@ -1,4 +1,5 @@
 ﻿#include "CG_Painter.h"
+#include "algorithm.h"
 #include <QMouseEvent>
 #include <QPainter> 
 
@@ -9,9 +10,15 @@ CG_Painter::CG_Painter(QWidget *parent)
 	
 	//增加绘制椭圆的Action
 	QAction* actionEllipse = new QAction(tr(u8"椭圆"));
-	actionEllipse->setStatusTip(tr(u8"绘制椭圆（鼠标左键单击产生椭圆，左键按下拖动改变大小，双击左键确定并退出，按下右键取消绘制）"));
+	actionEllipse->setStatusTip(tr(u8"【绘制椭圆】左键单击产生椭圆，左键按下拖动改变大小，双击左键确定并退出，按下右键取消绘制）"));
 	connect(actionEllipse, &QAction::triggered, this, &CG_Painter::state_to_ellipse);
 	ui.menuBar->addAction(actionEllipse);
+
+	//旋转图元Action
+	QAction* actionRotate = new QAction(tr(u8"旋转"));
+	actionRotate->setStatusTip(tr(u8"【旋转图元】首先单击左键确定旋转中心，然后按住左键拖动图元旋转，右键退出"));
+	connect(actionRotate, &QAction::triggered, this, &CG_Painter::action_to_rotate);
+	ui.menuBar->addAction(actionRotate);
 
 	//状态栏显示鼠标位置
 	statusLabel = new QLabel();
@@ -52,6 +59,11 @@ void CG_Painter::setState(PAINTER_STATE newState)
 		algo_info = "";
 		elli_state = ELLI_NON_POINT;
 		elli_id = getNewID();
+		break;
+	case CG_Painter::DRAW_ROTATE:
+		state_info = u8"状态：旋转图元 | ";
+		algo_info = "";
+		rotate_state = ROTATE_NON;
 		break;
 	default:
 		break;
@@ -102,6 +114,15 @@ void CG_Painter::mousePressEvent(QMouseEvent * event)
 			}
 		}
 	}
+	else if (state == DRAW_ROTATE) {
+		if (event->button() == Qt::LeftButton) {
+			if (rotate_state == ROTATE_READY && myCanvas.getID(x, y) != -1) {
+				selected_ID = myCanvas.getID(x, y);
+				init_x = x; init_y = y;
+				rotate_state = ROTATE_BEGIN;
+			}
+		}
+	}
 
 	refreshStateLabel();
 }
@@ -114,6 +135,25 @@ void CG_Painter::mouseMoveEvent(QMouseEvent * event)
 	mouse_x = x;
 	mouse_y = y;
 
+	//设置鼠标形状
+	if (buf_flag) {
+		if (bufCanvas.getID(x, y) != -1) {
+			setCursor(Qt::PointingHandCursor);
+		}
+		else {
+			setCursor(Qt::ArrowCursor);
+		}
+	}
+	else {
+		if (myCanvas.getID(x, y) != -1) {
+			setCursor(Qt::PointingHandCursor);
+		}
+		else {
+			setCursor(Qt::ArrowCursor);
+		}
+	}
+
+	
 	if (state==NOT_DRAWING) {
 		if (trans_state==TRANS_BEGIN) {
 			bufCanvas = myCanvas;
@@ -152,9 +192,20 @@ void CG_Painter::mouseMoveEvent(QMouseEvent * event)
 			update();
 		}
 	}
+	else if (state == DRAW_ROTATE) {
+		if (rotate_state == ROTATE_BEGIN && (event->buttons() & Qt::LeftButton)) {
+			int r = getRotateR(init_x, init_y, rotate_rx, rotate_ry, x, y);
+			bufCanvas = myCanvas;
+			bufCanvas.drawDotPoint(-1, rotate_rx, rotate_ry);
+			bufCanvas.rotate(selected_ID, rotate_rx, rotate_ry, r);
+			buf_flag = true;
+			update();
+		}
+	}
 
 	refreshStateLabel();
 }
+
 
 void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 {
@@ -172,6 +223,7 @@ void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 	}
 	
 	if (state == NOT_DRAWING) {
+		
 		if (event->button() == Qt::LeftButton) {
 			if (trans_state == TRANS_BEGIN) {
 				trans_state = TRANS_NON;
@@ -184,15 +236,15 @@ void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 			//正常状态下，右键单击，弹出菜单
 			selected_ID = myCanvas.getID(x, y);
 			if (selected_ID != -1) {
-				//TODO:右键菜单
 				//删除图元Action
 				QAction* actionDelete = new QAction(tr(u8"删除"));
 				actionDelete->setStatusTip(tr(u8"删除此图元"));
 				connect(actionDelete, &QAction::triggered, this, &CG_Painter::action_to_delete);
-
+				
 				QMenu menu;
 				//添加菜单项
 				menu.addAction(actionDelete);
+				
 				//在鼠标位置显示
 				menu.exec(QCursor::pos());
 			}
@@ -256,6 +308,21 @@ void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 			}
 		}
 	}
+	else if (state == DRAW_ROTATE) {
+		if (event->button() == Qt::LeftButton) {
+			if (rotate_state == ROTATE_NON) {
+				rotate_rx = x; rotate_ry = y;
+				rotate_state = ROTATE_READY;
+				bufCanvas = myCanvas;
+				bufCanvas.drawDotPoint(-1, rotate_rx, rotate_ry);
+				buf_flag = true;
+				update();
+			}else if (rotate_state == ROTATE_BEGIN) {
+				rotate_state = ROTATE_READY;
+				myCanvas = bufCanvas;
+			}
+		}
+	}
 	
 	refreshStateLabel();
 }
@@ -277,15 +344,60 @@ void CG_Painter::mouseDoubleClickEvent(QMouseEvent * event)
 	}
 }
 
+QImage* createImageWithOverlay(const QImage& baseImage, const QImage& overlayImage)
+{
+	QImage *imageWithOverlay = new QImage(baseImage.size(), QImage::Format_ARGB32_Premultiplied);
+	QPainter painter(imageWithOverlay);
+
+	painter.setCompositionMode(QPainter::CompositionMode_Source);
+	painter.fillRect(imageWithOverlay->rect(), Qt::transparent);
+
+	painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+	painter.drawImage(0, 0, baseImage);
+
+	painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+	painter.drawImage(0, 0, overlayImage);
+
+	painter.end();
+
+	return imageWithOverlay;
+}
+
 void CG_Painter::paintEvent(QPaintEvent * event)
 {
 	QPainter paint(this);
-	QImage *image = new QImage(geometry().width(), geometry().height(), QImage::Format_RGB888);
-	if (buf_flag)
-		bufCanvas.getIamge(image);
-	else
+	QImage *image;
+	if (!buf_flag) {
+		image = new QImage(geometry().width(), geometry().height(), QImage::Format_RGB888);
 		myCanvas.getIamge(image);
+	}
+	//else if (buf_flag && state == DRAW_ROTATE && (rotate_state == ROTATE_READY || rotate_state == ROTATE_BEGIN)) {
+		//方案一：
+		//绘制辅助点等信息
+		//QImage *helpImage = new QImage(geometry().width(), geometry().height(), QImage::Format_ARGB32_Premultiplied);
+		//QPainter helpPainter(helpImage);
+		//QPen helpPen(Qt::black); helpPen.setWidth(5);
+		//helpPainter.setPen(helpPen);
+		//helpPainter.drawPoint(rotate_rx, rotate_ry);
+		////叠加QImage
+		//QImage *bufImage = new QImage(geometry().width(), geometry().height(), QImage::Format_RGB888);
+		//bufCanvas.getIamge(bufImage);
+		//image = createImageWithOverlay(*bufImage, *helpImage);
+
+		//方案二：
+		//QPainter helpPainter(this);
+		//QPen helpPen(Qt::black); helpPen.setWidth(5);
+		//helpPainter.setPen(helpPen);
+		//helpPainter.drawPoint(rotate_rx, rotate_ry);
+		//image = new QImage(geometry().width(), geometry().height(), QImage::Format_RGB888);
+		//bufCanvas.getIamge(image);
+	//}
+	else {
+		image = new QImage(geometry().width(), geometry().height(), QImage::Format_RGB888);
+		bufCanvas.getIamge(image);
+	}
 	paint.drawImage(0, 0, *image);
+	delete image;
 }
 
 bool CG_Painter::autoPoly(int & nowx, int & nowy)

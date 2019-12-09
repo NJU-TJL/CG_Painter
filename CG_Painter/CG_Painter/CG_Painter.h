@@ -28,7 +28,7 @@ private:
 
 	//表示当前状态：画直线、多边形、椭圆
 	enum PAINTER_STATE {
-		NOT_DRAWING, DRAW_LINE, DRAW_POLYGON, DRAW_ELLIPSE
+		NOT_DRAWING, DRAW_LINE, DRAW_POLYGON, DRAW_ELLIPSE, DRAW_ROTATE
 	};
 	PAINTER_STATE state = NOT_DRAWING;
 	QString state_info = "";
@@ -86,6 +86,13 @@ private:
 	/*选中*/
 	int selected_ID;
 
+	/*旋转*/
+	enum ROTATE_STATE { ROTATE_NON, ROTATE_READY, ROTATE_BEGIN };
+	ROTATE_STATE rotate_state = ROTATE_NON;
+	int rotate_rx, rotate_ry;
+
+	/*辅助示意元素*/
+
 	//ID管理
 	int ID_Counter = 0;
 	int getNewID();
@@ -106,6 +113,9 @@ private slots:
 	void action_to_delete() {
 		myCanvas.delID(selected_ID);
 		update();
+	}
+	void action_to_rotate() {
+		setState(DRAW_ROTATE);
 	}
 	void state_to_lineDDA() { setState(DRAW_LINE); setAlgo(DDA); }
 	void state_to_lineBresenham() { setState(DRAW_LINE); setAlgo(BRESENHAM); }
