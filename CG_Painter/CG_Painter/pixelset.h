@@ -5,6 +5,11 @@
 using namespace std;
 #include<QImage>
 
+
+enum ALGORITHM {
+	DDA, BRESENHAM, COHEN, LIANG
+};
+
 //表示一个坐标点的类
 class Point
 {
@@ -17,7 +22,7 @@ public:
 
 enum PS_TYPE
 {
-	LINE, POLYGON, ELLIPSE, DOTPOINT
+	LINE, POLYGON, ELLIPSE, DOTPOINT, RECTANGLE
 };
 
 //表示像素点集合的类，即表示一个图元
@@ -54,7 +59,7 @@ public:
 	//缩放
 	virtual void scale(int x, int y, float s) {}
 	//裁剪
-	virtual void clip(int x1, int y1, int x2, int y2, string algorithm) {}
+	virtual void clip(int x1, int y1, int x2, int y2, ALGORITHM algorithm) {}
 };
 
 //线段
@@ -95,7 +100,7 @@ public:
 	//缩放
 	void scale(int x, int y, float s);
 	//裁剪
-	void clip(int x1, int y1, int x2, int y2, string algorithm);
+	void clip(int x1, int y1, int x2, int y2, ALGORITHM algorithm);
 };
 
 //多边形
@@ -196,6 +201,31 @@ public:
 		x = ix; y = iy;
 		width = iwidth; color = icolor;
 		type = DOTPOINT;
+	}
+	//根据参数绘制图元
+	void paint(QImage *image);
+};
+
+//矩形框（用于剪裁时的示意剪裁窗口）
+class Rectangle :public PixelSet {
+	//点所在的位置
+	int x1, y1;
+	int x2, y2;
+	//宽度
+	int width;
+public:
+	Rectangle() { type = RECTANGLE; }
+	Rectangle(const Rectangle& B) :PixelSet(B) {
+		x1 = B.x1; y1 = B.y1;
+		x2 = B.x2; y2 = B.y2;
+		width = B.width;
+		type = RECTANGLE;
+	}
+	Rectangle(int ix1, int iy1, int ix2, int iy2, int iwidth = 5, QColor icolor = QColor(0xB2, 0xDF, 0xEE)) {
+		x1 = min(ix1, ix2); x2 = max(ix1, ix2);
+		y1 = min(iy1, iy2); y2 = max(iy1, iy2);
+		width = iwidth; color = icolor;
+		type = RECTANGLE;
 	}
 	//根据参数绘制图元
 	void paint(QImage *image);

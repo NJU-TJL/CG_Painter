@@ -18,6 +18,7 @@ Canvas::Canvas(const Canvas & B)
 		color = B.color;
 		pixelsets.clear();
 		for (int i = 0; i < B.pixelsets.size(); i++) {
+			//TODO:图元复制
 			PixelSet *p=nullptr;
 			switch (B.pixelsets[i]->type)
 			{
@@ -112,13 +113,24 @@ void Canvas::scale(int id, int x, int y, double s)
 	}
 }
 
-void Canvas::clip(int id, int x1, int y1, int x2, int y2, string algorithm)
+void Canvas::clip(int id, int ix1, int iy1, int ix2, int iy2, ALGORITHM algorithm)
 {
+	int x1 = min(ix1, ix2); int x2 = max(ix1, ix2);
+	int y1 = min(iy1, iy2); int y2 = max(iy1, iy2);
 	for (auto i = pixelsets.begin(); i != pixelsets.end(); i++) {
 		if ((*i)->id == id) {
 			(*i)->clip(x1, y1, x2, y2, algorithm);
 			return;
 		}
+	}
+}
+
+void Canvas::clipAll(int ix1, int iy1, int ix2, int iy2, ALGORITHM algorithm)
+{
+	int x1 = min(ix1, ix2); int x2 = max(ix1, ix2);
+	int y1 = min(iy1, iy2); int y2 = max(iy1, iy2);
+	for (auto i = pixelsets.begin(); i != pixelsets.end(); i++) {
+		(*i)->clip(x1, y1, x2, y2, algorithm);
 	}
 }
 
@@ -219,6 +231,13 @@ void Canvas::drawEllipse(int id, int x, int y, int rx, int ry)
 void Canvas::drawDotPoint(int id, int x, int y, int iwidth, QColor icolor)
 {
 	PixelSet *p = new DotPoint(x, y, iwidth, icolor);
+	p->setID(id);
+	pixelsets.push_back(p);
+}
+
+void Canvas::drawRectangle(int id, int x1, int y1, int x2, int y2, int iwidth, QColor icolor)
+{
+	PixelSet *p = new Rectangle(x1, y1, x2, y2, iwidth, icolor);
 	p->setID(id);
 	pixelsets.push_back(p);
 }

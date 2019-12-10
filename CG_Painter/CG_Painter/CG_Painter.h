@@ -28,7 +28,7 @@ private:
 
 	//表示当前状态：画直线、多边形、椭圆
 	enum PAINTER_STATE {
-		NOT_DRAWING, DRAW_LINE, DRAW_POLYGON, DRAW_ELLIPSE, DRAW_ROTATE, DRAW_SCALE
+		NOT_DRAWING, DRAW_LINE, DRAW_POLYGON, DRAW_ELLIPSE, DRAW_ROTATE, DRAW_SCALE, DRAW_CLIP
 	};
 	PAINTER_STATE state = NOT_DRAWING;
 	QString state_info = "";
@@ -95,7 +95,11 @@ private:
 	enum SCALE_STATE { SCALE_NON, SCALE_READY, SCALE_BEGIN };
 	SCALE_STATE scale_state = SCALE_NON;
 	int scale_rx, scale_ry;
-
+	
+	/*裁剪*/
+	enum CLIP_STATE { CLIP_NON, CLIP_BEGIN };
+	CLIP_STATE clip_state = CLIP_NON;
+	
 	//ID管理
 	int ID_Counter = 0;
 	int getNewID();
@@ -123,11 +127,16 @@ private slots:
 	void action_to_scale() {
 		setState(DRAW_SCALE);
 	}
+	void action_to_clip_Cohen() { 
+		setState(DRAW_CLIP); setAlgo(COHEN); 
+	}
+	void action_to_clip_Liang() {
+		setState(DRAW_CLIP); setAlgo(LIANG);
+	}
 	void state_to_lineDDA() { setState(DRAW_LINE); setAlgo(DDA); }
 	void state_to_lineBresenham() { setState(DRAW_LINE); setAlgo(BRESENHAM); }
 	void state_to_polygonDDA() { setState(DRAW_POLYGON); setAlgo(DDA); }
 	void state_to_polygonBresenham() { setState(DRAW_POLYGON); setAlgo(BRESENHAM); }
-	void state_to_ellipse() { 
-		setState(DRAW_ELLIPSE); }
+	void state_to_ellipse() { setState(DRAW_ELLIPSE); }
 
 };

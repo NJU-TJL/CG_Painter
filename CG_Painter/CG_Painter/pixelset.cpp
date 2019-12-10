@@ -47,16 +47,16 @@ void Line::scale(int x, int y, float s)
 	refresh();
 }
 
-void Line::clip(int xmin, int ymin, int xmax, int ymax, string algorithm)
+void Line::clip(int xmin, int ymin, int xmax, int ymax, ALGORITHM algorithm)
 {
-	if (algorithm == "Cohen-Sutherland") {
+	if (algorithm == COHEN) {
 		Cohen_Sutherland(x1, y1, x2, y2, xmin, ymin, xmax, ymax);
 		if (x1 == -1)
 			points.clear();
 		else
 			refresh();
 	}
-	else if (algorithm == "Liang-Barsky") {
+	else if (algorithm == LIANG) {
 		if (Liang_Barsky(x1, y1, x2, y2, xmin, ymin, xmax, ymax))
 			refresh();
 		else
@@ -131,4 +131,14 @@ void DotPoint::paint(QImage * image)
 	myPen.setCapStyle(Qt::RoundCap);
 	myPainter.setPen(myPen);
 	myPainter.drawPoint(x, y);
+}
+
+void Rectangle::paint(QImage * image)
+{
+	QPainter myPainter(image);
+	QPen myPen(color);
+	myPen.setWidth(width);
+	myPen.setStyle(Qt::DashLine);
+	myPainter.setPen(myPen);
+	myPainter.drawRect(x1, y1, x2 - x1, y2 - y1);
 }

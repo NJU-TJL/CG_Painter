@@ -27,6 +27,21 @@ CG_Painter::CG_Painter(QWidget *parent)
 	connect(actionScale, &QAction::triggered, this, &CG_Painter::action_to_scale);
 	ui.menuBar->addAction(actionScale);
 
+	
+	//裁剪Action
+	QAction* actionClip_Cohen = new QAction(tr(u8"线段裁剪①"));
+	actionClip_Cohen->setStatusTip(tr(u8"裁剪算法：Cohen-Sutherland （左键单击选择裁剪窗口的起点与终点；注：裁剪窗口对画布上的所有直线有效）"));
+	connect(actionClip_Cohen, &QAction::triggered, this, &CG_Painter::action_to_clip_Cohen);
+	QAction* actionClip_Liang = new QAction(tr(u8"线段裁剪②"));
+	actionClip_Liang->setStatusTip(tr(u8"裁剪算法：Liang-Barsky （左键单击选择裁剪窗口的起点与终点；注：裁剪窗口对画布上的所有直线有效）"));
+	connect(actionClip_Liang, &QAction::triggered, this, &CG_Painter::action_to_clip_Liang);
+	//裁剪Menu
+	QMenu *menu1 = new QMenu(ui.menuBar);
+	menu1->setTitle(u8"裁剪");
+	menu1->addAction(actionClip_Cohen);
+	menu1->addAction(actionClip_Liang);
+	ui.menuBar->addAction(menu1->menuAction());
+
 	//状态栏显示鼠标位置
 	statusLabel = new QLabel();
 	statusLabel->resize(100, 30);
@@ -77,6 +92,10 @@ void CG_Painter::setState(PAINTER_STATE newState)
 		algo_info = "";
 		scale_state = SCALE_NON;
 		break;
+	case CG_Painter::DRAW_CLIP:
+		state_info = u8"状态：线段裁剪 | ";
+		clip_state = CLIP_NON;
+		break;
 	default:
 		break;
 	}
@@ -93,6 +112,12 @@ void CG_Painter::setAlgo(ALGORITHM newAlgo)
 		break;
 	case BRESENHAM:
 		algo_info = "Bresenham | ";
+		break;
+	case COHEN:
+		algo_info = "Cohen-Sutherland | ";
+		break;
+	case LIANG:
+		algo_info = "Liang-Barsky | ";
 		break;
 	default:
 		break;
@@ -144,6 +169,7 @@ void CG_Painter::mousePressEvent(QMouseEvent * event)
 			}
 		}
 	}
+	
 
 	refreshStateLabel();
 }
@@ -233,7 +259,14 @@ void CG_Painter::mouseMoveEvent(QMouseEvent * event)
 			update();
 		}
 	}
-	
+	else if (state == DRAW_CLIP) {
+		if (clip_state == CLIP_BEGIN) { //裁剪时，无需按住左键
+			bufCanvas = myCanvas;
+			bufCanvas.drawRectangle(-1, init_x, init_y, x, y);
+			buf_flag = true;
+			update();
+		}
+	}
 
 	refreshStateLabel();
 }
@@ -370,7 +403,20 @@ void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 			}
 		}
 	}
-	
+	else if (state == DRAW_CLIP) {
+		if (event->button() == Qt::LeftButton) {
+			if (clip_state == CLIP_NON) {
+				init_x = x; init_y = y;
+				clip_state = CLIP_BEGIN;
+			}
+			else if (clip_state == CLIP_BEGIN) {
+				myCanvas.clipAll(init_x, init_y, x, y, algorithm);
+				setState(NOT_DRAWING);
+			}
+		}
+	}
+
+
 	refreshStateLabel();
 }
 
