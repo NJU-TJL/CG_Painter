@@ -15,6 +15,20 @@ CG_Painter::CG_Painter(QWidget *parent)
 	connect(actionEllipse, &QAction::triggered, this, &CG_Painter::state_to_ellipse);
 	ui.menuBar->addAction(actionEllipse);
 
+	//绘制曲线
+	QAction* actionCurve_Bezier = new QAction(tr(u8"Bezier曲线"));
+	actionCurve_Bezier->setStatusTip(tr(u8"绘制Bezier曲线 （左键依次单击确定控制点，右键确定并退出）"));
+	connect(actionCurve_Bezier, &QAction::triggered, this, &CG_Painter::action_to_curve_Bezier);
+	//QAction* actionClip_Liang = new QAction(tr(u8"线段裁剪②"));
+	//actionClip_Liang->setStatusTip(tr(u8"裁剪算法：Liang-Barsky （左键单击选择裁剪窗口的起点与终点；注：裁剪窗口对画布上的所有直线有效）"));
+	//connect(actionClip_Liang, &QAction::triggered, this, &CG_Painter::action_to_clip_Liang);
+	//曲线Menu
+	QMenu *menu2 = new QMenu(ui.menuBar);
+	menu2->setTitle(u8"曲线");
+	menu2->addAction(actionCurve_Bezier);
+	//menu2->addAction(actionClip_Liang);
+	ui.menuBar->addAction(menu2->menuAction());
+
 	//旋转图元Action
 	QAction* actionRotate = new QAction(tr(u8"旋转"));
 	actionRotate->setStatusTip(tr(u8"【旋转图元】首先单击左键确定旋转中心，然后按住左键拖动图元旋转，右键退出"));
@@ -27,7 +41,6 @@ CG_Painter::CG_Painter(QWidget *parent)
 	connect(actionScale, &QAction::triggered, this, &CG_Painter::action_to_scale);
 	ui.menuBar->addAction(actionScale);
 
-	
 	//裁剪Action
 	QAction* actionClip_Cohen = new QAction(tr(u8"线段裁剪①"));
 	actionClip_Cohen->setStatusTip(tr(u8"裁剪算法：Cohen-Sutherland （左键单击选择裁剪窗口的起点与终点；注：裁剪窗口对画布上的所有直线有效）"));
@@ -96,6 +109,11 @@ void CG_Painter::setState(PAINTER_STATE newState)
 		state_info = u8"状态：线段裁剪 | ";
 		clip_state = CLIP_NON;
 		break;
+	case CG_Painter::DRAW_CURVE:
+		state_info = u8"状态：画曲线 | ";
+		curve_points.clear();
+		curve_state = CURVE_NON;
+		break;
 	default:
 		break;
 	}
@@ -118,6 +136,12 @@ void CG_Painter::setAlgo(ALGORITHM newAlgo)
 		break;
 	case LIANG:
 		algo_info = "Liang-Barsky | ";
+		break;
+	case BEZIER:
+		algo_info = "Bezier | ";
+		break;
+	case B_SPLINE:
+		algo_info = "B-spline | ";
 		break;
 	default:
 		break;
@@ -280,7 +304,7 @@ void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 	mouse_x = x;
 	mouse_y = y;
 
-	if (state != NOT_DRAWING) {
+	if (state != NOT_DRAWING && state != DRAW_CURVE) {
 		if (event->button() == Qt::RightButton) {
 			setState(NOT_DRAWING);
 			return;
@@ -413,6 +437,21 @@ void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 				myCanvas.clipAll(init_x, init_y, x, y, algorithm);
 				setState(NOT_DRAWING);
 			}
+		}
+	}
+	else if (state == DRAW_CURVE) {
+		if (event->button() == Qt::LeftButton) {
+			curve_points.push_back(Point(x, y));
+			bufCanvas = myCanvas;
+			buf_flag = true;
+			bufCanvas.drawFoldLine(-1, curve_points);
+			update();
+		}
+		else if (event->button() == Qt::RightButton) {
+			FoldLine *p= myCanvas.drawFoldLine(getNewID(), curve_points);
+			myCanvas.drawCurve(getNewID(), algorithm, p);
+			setState(NOT_DRAWING);
+			update();
 		}
 	}
 

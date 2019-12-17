@@ -40,4 +40,9 @@ void Cohen_Sutherland(int &x1, int &y1, int &x2, int &y2, int xmin, int ymin, in
 //Liang-Barsky算法
 bool Liang_Barsky(int &x1, int &y1, int &x2, int &y2, int xmin, int ymin, int xmax, int ymax);
 
+/*曲线部分*/
+//Bezier曲线生成
+void drawCurve_Bezier(const vector<Point>& vertexs, PixelSet& myset);
+
+
 #endif // ALGORITHM_H

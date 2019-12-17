@@ -28,7 +28,7 @@ private:
 
 	//表示当前状态：画直线、多边形、椭圆
 	enum PAINTER_STATE {
-		NOT_DRAWING, DRAW_LINE, DRAW_POLYGON, DRAW_ELLIPSE, DRAW_ROTATE, DRAW_SCALE, DRAW_CLIP
+		NOT_DRAWING, DRAW_LINE, DRAW_POLYGON, DRAW_ELLIPSE, DRAW_ROTATE, DRAW_SCALE, DRAW_CLIP, DRAW_CURVE
 	};
 	PAINTER_STATE state = NOT_DRAWING;
 	QString state_info = "";
@@ -100,6 +100,11 @@ private:
 	enum CLIP_STATE { CLIP_NON, CLIP_BEGIN };
 	CLIP_STATE clip_state = CLIP_NON;
 	
+	/*曲线*/
+	vector<Point> curve_points;
+	enum CURVE_STATE { CURVE_NON, CURVE_BEGIN };
+	CURVE_STATE curve_state = CURVE_NON;
+
 	//ID管理
 	int ID_Counter = 0;
 	int getNewID();
@@ -132,6 +137,9 @@ private slots:
 	}
 	void action_to_clip_Liang() {
 		setState(DRAW_CLIP); setAlgo(LIANG);
+	}
+	void action_to_curve_Bezier() {
+		setState(DRAW_CURVE); setAlgo(BEZIER);
 	}
 	void state_to_lineDDA() { setState(DRAW_LINE); setAlgo(DDA); }
 	void state_to_lineBresenham() { setState(DRAW_LINE); setAlgo(BRESENHAM); }

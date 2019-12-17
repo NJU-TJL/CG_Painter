@@ -31,6 +31,12 @@ Canvas::Canvas(const Canvas & B)
 			case ELLIPSE:
 				p = new Ellipse(*((Ellipse*)B.pixelsets[i]));
 				break;
+			case CURVE:
+				p = new Curve(*((Curve*)B.pixelsets[i]), *this);
+				break;
+			case FOLDLINE:
+				p = new FoldLine(*((FoldLine*)B.pixelsets[i]));
+				break;
 			default:
 				break;
 			}
@@ -59,6 +65,12 @@ const Canvas & Canvas::operator=(const Canvas & B)
 			case ELLIPSE:
 				p = new Ellipse(*((Ellipse*)B.pixelsets[i]));
 				break;
+			case CURVE:
+				p = new Curve(*((Curve*)B.pixelsets[i]), *this);
+				break;
+			case FOLDLINE:
+				p = new FoldLine(*((FoldLine*)B.pixelsets[i]));
+				break;
 			default:
 				p = nullptr;
 				break;
@@ -77,6 +89,7 @@ void Canvas::setColor(int r, int g, int b)
 
 void Canvas::getIamge(QImage *image)
 {
+	clearPixelSet();//输出前，先清除无效图元
 	image->fill(Qt::white);
 	for (int i = 0; i < pixelsets.size(); i++) {
 		pixelsets[i]->paint(image);
@@ -154,9 +167,37 @@ void Canvas::delID(int id)
 {
 	for (auto it = pixelsets.begin(); it != pixelsets.end();) {
 		if ((*it)->id == id) {
-			delete (*it);
+			if ((*it)->type == CURVE) {
+				delete (Curve*)(*it);
+			}else{
+				delete (*it);
+			}
 			it = pixelsets.erase(it);
 			return;
+		}
+		else {
+			++it;
+		}
+	}
+	return;
+}
+
+PixelSet * Canvas::getPixelSet(int id)
+{
+	for (size_t i = 0; i < pixelsets.size(); i++) {
+		if (pixelsets[i]->id == id) {
+			return pixelsets[i];
+		}
+	}
+	return nullptr;
+}
+
+void Canvas::clearPixelSet()
+{
+	for (auto it = pixelsets.begin(); it != pixelsets.end();) {
+		if ((*it)->clear_flag == true) {
+			delete (*it);
+			it = pixelsets.erase(it);
 		}
 		else {
 			++it;
@@ -240,4 +281,22 @@ void Canvas::drawRectangle(int id, int x1, int y1, int x2, int y2, int iwidth, Q
 	PixelSet *p = new Rectangle(x1, y1, x2, y2, iwidth, icolor);
 	p->setID(id);
 	pixelsets.push_back(p);
+}
+
+void Canvas::drawCurve(int id, ALGORITHM algorithm, FoldLine *foldline)
+{
+	PixelSet *p = new Curve(algorithm, foldline);
+	p->setID(id);
+	p->setColor(color);
+	pixelsets.push_back(p);
+}
+
+FoldLine * Canvas::drawFoldLine(int id, const vector<Point>& vertexs)
+{
+	FoldLine *res = new FoldLine(vertexs);
+	PixelSet *p = res;
+	p->refresh();
+	p->setID(id);
+	pixelsets.push_back(p);
+	return res;
 }

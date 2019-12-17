@@ -41,6 +41,12 @@ public:
 	//画一个虚线矩形框（用于辅助示意）
 	void drawRectangle(int id, int x1, int y1, int x2, int y2, int iwidth = 2, QColor icolor = QColor(0x32, 0xCD, 0x32));
 
+	//画曲线
+	void drawCurve(int id, ALGORITHM algorithm, FoldLine *foldline);
+
+	//画虚线折线段（用于辅助示意：曲线控制点）
+	FoldLine* drawFoldLine(int id, const vector<Point>& vertexs);
+
 	//指定id的图元平移
 	void translate(int id, int dx, int dy);
 
@@ -62,6 +68,11 @@ public:
 	//删除指定ID的图元
 	void delID(int id);
 		
+	//返回某ID图元的指针（特殊情况下使用，比如FoldLine指针的拷贝）
+	PixelSet* getPixelSet(int id);
+
+	//清除无效的图元
+	void clearPixelSet();
 };
 
 #endif // CANVAS_H

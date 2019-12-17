@@ -7,7 +7,7 @@ using namespace std;
 
 
 enum ALGORITHM {
-	DDA, BRESENHAM, COHEN, LIANG
+	DDA, BRESENHAM, COHEN, LIANG, BEZIER, B_SPLINE
 };
 
 //表示一个坐标点的类
@@ -22,7 +22,7 @@ public:
 
 enum PS_TYPE
 {
-	LINE, POLYGON, ELLIPSE, DOTPOINT, RECTANGLE
+	LINE, POLYGON, ELLIPSE, DOTPOINT, RECTANGLE, CURVE, FOLDLINE
 };
 
 //表示像素点集合的类，即表示一个图元
@@ -32,10 +32,10 @@ protected:
 	int id;//图元编号
 	QColor color;//图元颜色
 	vector<Point> points;//构成图元的所有像素点的坐标
-	PS_TYPE type;//图元类型
-
+	bool clear_flag = false;//标记是否无效，需要被清除
 	friend class Canvas;
 public:
+	PS_TYPE type;//图元类型
 	PixelSet(int i = 0, QColor icolor = Qt::black) { id = i; color = icolor; }
 	PixelSet(const PixelSet& B) {
 		id = B.id; color = B.color; type = B.type;
@@ -231,4 +231,73 @@ public:
 	void paint(QImage *image);
 };
 
+//折线段（用于辅助示意：曲线控制点）
+class FoldLine :public PixelSet
+{
+	//图元的参数
+	vector<Point> vertexs;
+	int width;
+	friend class Curve;
+public:
+	FoldLine() { type = FOLDLINE; }
+	FoldLine(const vector<Point>& ivertexs, int iwidth = 2, QColor icolor = QColor(0xB2, 0xDF, 0xEE)) {
+		set(ivertexs); type = FOLDLINE;
+		color = icolor;
+		width = iwidth;
+	}
+	//参数设定
+	void set(const vector<Point>& ivertexs) {
+		vertexs = ivertexs;
+	}
+	//根据参数绘制图元
+	void paint(QImage *image);
+	//平移
+	void translate(int dx, int dy) {
+		for (int i = 0; i < vertexs.size(); i++) {
+			vertexs[i].x += dx;
+			vertexs[i].y += dy;
+		}
+	}
+	//旋转
+	void rotate(int x, int y, int r);
+	//缩放
+	void scale(int x, int y, float s);
+};
+//曲线
+class Curve :public PixelSet
+{
+	//图元的参数
+	vector<Point> vertexs;
+	ALGORITHM algorithm;
+	FoldLine* foldline; //用于辅助示意的虚折线（此处注意：拷贝赋值的时候要额外处理）
+public:
+	Curve() { type = CURVE; }
+	Curve(ALGORITHM ialgorithm, FoldLine* ifoldline) {
+		type = CURVE; foldline = ifoldline;
+		set(ialgorithm);
+	}
+	Curve(const Curve& B, Canvas& canvas);
+	//参数设定
+	void set(ALGORITHM ialgorithm) {
+		algorithm = ialgorithm;
+	}
+	//根据参数绘制图元
+	void refresh();
+	void paint(QImage *image);
+	//平移
+	void translate(int dx, int dy) {
+		foldline->translate(dx, dy);
+	}
+	//旋转
+	void rotate(int x, int y, int r) {
+		foldline->rotate(x, y, r);
+	}
+	//缩放
+	void scale(int x, int y, float s) {
+		foldline->scale(x, y, s);
+	}
+	~Curve() {
+		foldline->clear_flag = true;
+	}
+};
 #endif // PIXELSET_H
