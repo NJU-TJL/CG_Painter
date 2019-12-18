@@ -22,7 +22,7 @@ public:
 
 enum PS_TYPE
 {
-	LINE, POLYGON, ELLIPSE, DOTPOINT, RECTANGLE, CURVE, FOLDLINE
+	LINE, POLYGON, ELLIPSE, DOTPOINT, RECTANGLE, CURVE, FOLDLINE, CTRLPOINT
 };
 
 //表示像素点集合的类，即表示一个图元
@@ -44,6 +44,9 @@ public:
 	}
 	//设定图元ID
 	void setID(int i) { id = i; }
+	//判断一个点是否在本图元上（如果在，返回ID；不在，返回-1）
+	int CLICK_BIAS = 3; //允许的误差范围（圆形区域的半径）
+	virtual int getID(int x, int y);
 	//设定图元颜色
 	void setColor(const QColor &icolor) { color = icolor; }
 	//增加一个指定坐标的像素点
@@ -238,6 +241,7 @@ class FoldLine :public PixelSet
 	vector<Point> vertexs;
 	int width;
 	friend class Curve;
+	friend class CtrlPoint;
 public:
 	FoldLine() { type = FOLDLINE; }
 	FoldLine(const vector<Point>& ivertexs, int iwidth = 2, QColor icolor = QColor(0xB2, 0xDF, 0xEE)) {
@@ -263,6 +267,30 @@ public:
 	//缩放
 	void scale(int x, int y, float s);
 };
+//曲线的控制点
+class CtrlPoint :public PixelSet 
+{
+	//在曲线控制点组中的位置下标
+	size_t index;
+	//曲线控制点组（存在虚折线中）
+	FoldLine *foldline;
+	int width;//点的粗细
+public:
+	CtrlPoint() { type = CTRLPOINT; }
+	CtrlPoint(const CtrlPoint& B, Canvas&canvas);
+	CtrlPoint(size_t iindex, FoldLine *ifoldline, int iwidth = 10, QColor icolor = QColor(0xB2, 0xDF, 0xEE)) {
+		type = CTRLPOINT;
+		index = iindex; foldline = ifoldline;
+		width = iwidth; color = icolor;
+	}
+	//鼠标判断
+	int getID(int x, int y);
+	//平移
+	void translate(int dx, int dy);
+	//根据参数绘制图元
+	void paint(QImage *image);
+};
+
 //曲线
 class Curve :public PixelSet
 {

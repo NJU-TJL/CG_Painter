@@ -43,9 +43,10 @@ public:
 
 	//画曲线
 	void drawCurve(int id, ALGORITHM algorithm, FoldLine *foldline);
-
 	//画虚线折线段（用于辅助示意：曲线控制点）
 	FoldLine* drawFoldLine(int id, const vector<Point>& vertexs);
+	//画曲线控制点（辅助示意）
+	void drawCtrlPoint(int id, size_t index, FoldLine *foldline);
 
 	//指定id的图元平移
 	void translate(int id, int dx, int dy);
@@ -62,8 +63,9 @@ public:
 	void clipAll(int ix1, int iy1, int ix2, int iy2, ALGORITHM algorithm = COHEN);
 
 	//查看指定某点是否对应于某个图元ID，是则返回ID，否则返回-1；
-	int CLICK_BIAS = 4; //允许的误差范围（圆形区域的半径）
 	int getID(int x, int y);
+	//查看某个ID对应的图元的类型
+	int getType(int id);
 
 	//删除指定ID的图元
 	void delID(int id);

@@ -71,6 +71,9 @@ const Canvas & Canvas::operator=(const Canvas & B)
 			case FOLDLINE:
 				p = new FoldLine(*((FoldLine*)B.pixelsets[i]));
 				break;
+			case CTRLPOINT:
+				p = new CtrlPoint(*((CtrlPoint*)B.pixelsets[i]), *this);
+				break;
 			default:
 				p = nullptr;
 				break;
@@ -150,17 +153,21 @@ void Canvas::clipAll(int ix1, int iy1, int ix2, int iy2, ALGORITHM algorithm)
 
 int Canvas::getID(int x, int y)
 {
-	int res_ID = -1;
 	for (size_t i = 0; i < pixelsets.size(); i++) {
-		for (size_t j = 0; j < pixelsets[i]->points.size(); j++) {
-			int ix = pixelsets[i]->points[j].x;
-			int iy = pixelsets[i]->points[j].y;
-			if ((ix - x)*(ix - x) + (iy - y)*(iy - y) <= CLICK_BIAS * CLICK_BIAS) {
-				return pixelsets[i]->id;
-			}
+		int res=pixelsets[i]->getID(x, y);
+		if (res != -1) return res;
+	}
+	return -1;
+}
+
+int Canvas::getType(int id)
+{
+	for (size_t i = 0; i < pixelsets.size(); i++) {
+		if (pixelsets[i]->id == id) {
+			return pixelsets[i]->type;
 		}
 	}
-	return res_ID;
+	return -1;
 }
 
 void Canvas::delID(int id)
@@ -299,4 +306,11 @@ FoldLine * Canvas::drawFoldLine(int id, const vector<Point>& vertexs)
 	p->setID(id);
 	pixelsets.push_back(p);
 	return res;
+}
+
+void Canvas::drawCtrlPoint(int id, size_t index, FoldLine * foldline)
+{
+	PixelSet *p = new CtrlPoint(index, foldline);
+	p->setID(id);
+	pixelsets.push_back(p);
 }

@@ -16,6 +16,19 @@ void PixelSet::paint(QImage *image)
 	}
 }
 
+int PixelSet::getID(int x, int y)
+{
+	int res_ID = -1;
+	for (size_t j = 0; j < points.size(); j++) {
+		int ix = points[j].x;
+		int iy = points[j].y;
+		if ((ix - x)*(ix - x) + (iy - y)*(iy - y) <= CLICK_BIAS * CLICK_BIAS) {
+			return id;
+		}
+	}
+	return res_ID;
+}
+
 void PixelSet::translate(int dx, int dy)
 {
 	for (auto var = points.begin(); var != points.end(); ++var) {
@@ -195,4 +208,51 @@ void FoldLine::scale(int x, int y, float s)
 	for (size_t i = 0; i < n; i++) {
 		scalePoint(vertexs[i].x, vertexs[i].y, x, y, s);
 	}
+}
+
+CtrlPoint::CtrlPoint(const CtrlPoint & B, Canvas & canvas) :PixelSet(B) {
+	type = CTRLPOINT;
+	width = B.width;
+	index = B.index;
+	clear_flag = B.clear_flag;
+	if (clear_flag) return;
+	foldline = (FoldLine*)(canvas.getPixelSet(B.foldline->id));
+	assert(foldline != nullptr);
+}
+
+int CtrlPoint::getID(int x, int y)
+{
+	if (clear_flag) return -1;
+	int ix = foldline->vertexs[index].x;
+	int iy = foldline->vertexs[index].y;
+	if ((ix - x)*(ix - x) + (iy - y)*(iy - y) <= ((width + 2) * (width + 2))/4) {
+		return id;
+	}
+	else {
+		return -1;
+	}
+}
+
+void CtrlPoint::translate(int dx, int dy)
+{
+	if (clear_flag) return;
+	foldline->vertexs[index].x+=dx;
+	foldline->vertexs[index].y+=dy;
+}
+
+void CtrlPoint::paint(QImage * image)
+{
+	if (clear_flag) return;
+	if (foldline->clear_flag) {
+		clear_flag = true;
+		return;
+	}
+	int x = foldline->vertexs[index].x;
+	int y = foldline->vertexs[index].y;
+	QPainter myPainter(image);
+	QPen myPen(color);
+	myPen.setWidth(width);
+	myPen.setCapStyle(Qt::RoundCap);
+	myPainter.setPen(myPen);
+	myPainter.drawPoint(x, y);
 }

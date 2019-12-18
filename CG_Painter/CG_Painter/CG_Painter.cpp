@@ -17,7 +17,7 @@ CG_Painter::CG_Painter(QWidget *parent)
 
 	//绘制曲线
 	QAction* actionCurve_Bezier = new QAction(tr(u8"Bezier曲线"));
-	actionCurve_Bezier->setStatusTip(tr(u8"绘制Bezier曲线 （左键依次单击确定控制点，右键确定并退出）"));
+	actionCurve_Bezier->setStatusTip(tr(u8"【绘制Bezier曲线】左键依次单击确定控制点，右键确定并退出"));
 	connect(actionCurve_Bezier, &QAction::triggered, this, &CG_Painter::action_to_curve_Bezier);
 	//QAction* actionClip_Liang = new QAction(tr(u8"线段裁剪②"));
 	//actionClip_Liang->setStatusTip(tr(u8"裁剪算法：Liang-Barsky （左键单击选择裁剪窗口的起点与终点；注：裁剪窗口对画布上的所有直线有效）"));
@@ -324,16 +324,15 @@ void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 		else if(event->button() == Qt::RightButton){
 			//正常状态下，右键单击，弹出菜单
 			selected_ID = myCanvas.getID(x, y);
-			if (selected_ID != -1) {
+			if (selected_ID != -1 && myCanvas.getType(selected_ID) != CTRLPOINT) {
 				//删除图元Action
 				QAction* actionDelete = new QAction(tr(u8"删除"));
 				actionDelete->setStatusTip(tr(u8"删除此图元"));
 				connect(actionDelete, &QAction::triggered, this, &CG_Painter::action_to_delete);
 				
-				QMenu menu;
 				//添加菜单项
+				QMenu menu;
 				menu.addAction(actionDelete);
-				
 				//在鼠标位置显示
 				menu.exec(QCursor::pos());
 			}
@@ -444,12 +443,18 @@ void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 			curve_points.push_back(Point(x, y));
 			bufCanvas = myCanvas;
 			buf_flag = true;
-			bufCanvas.drawFoldLine(-1, curve_points);
+			FoldLine* p = bufCanvas.drawFoldLine(-1, curve_points);
+			for (size_t i = 0; i < curve_points.size(); i++) {
+				bufCanvas.drawCtrlPoint(-1, i, p);
+			}
 			update();
 		}
 		else if (event->button() == Qt::RightButton) {
 			FoldLine *p= myCanvas.drawFoldLine(getNewID(), curve_points);
 			myCanvas.drawCurve(getNewID(), algorithm, p);
+			for (size_t i = 0; i < curve_points.size(); i++) {
+				myCanvas.drawCtrlPoint(getNewID(), i, p);
+			}
 			setState(NOT_DRAWING);
 			update();
 		}
