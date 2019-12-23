@@ -16,7 +16,7 @@ public:
 
 private:
 	Ui::CG_PainterClass ui;
-
+	
 	int mouse_x = 0, mouse_y = 0;//鼠标位置
 	QLabel *statusLabel;
 	void refreshStateLabel();
@@ -25,6 +25,8 @@ private:
 	Canvas bufCanvas;
 	bool buf_flag = false;
 	QColor nowColor=Qt::black;
+	//用于设置更新颜色图标
+	void refresh_ColorIcon();
 
 	//表示当前状态：画直线、多边形、椭圆
 	enum PAINTER_STATE {
@@ -113,6 +115,7 @@ private slots:
 	void action_to_set_color() {
 		nowColor = QColorDialog::getColor(Qt::black,this,u8"绘图颜色选择");
 		myCanvas.setColor(nowColor);
+		refresh_ColorIcon();
 	}
 	void action_to_save() {
 		QString filename = QFileDialog::getSaveFileName(this, u8"保存路径选择", ".", u8"图片 (*.bmp)");
@@ -140,6 +143,9 @@ private slots:
 	}
 	void action_to_curve_Bezier() {
 		setState(DRAW_CURVE); setAlgo(BEZIER);
+	}
+	void action_to_curve_Bspline() {
+		setState(DRAW_CURVE); setAlgo(B_SPLINE);
 	}
 	void state_to_lineDDA() { setState(DRAW_LINE); setAlgo(DDA); }
 	void state_to_lineBresenham() { setState(DRAW_LINE); setAlgo(BRESENHAM); }

@@ -8,6 +8,7 @@ CG_Painter::CG_Painter(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
+	refresh_ColorIcon();
 	
 	//增加绘制椭圆的Action
 	QAction* actionEllipse = new QAction(tr(u8"椭圆"));
@@ -19,14 +20,14 @@ CG_Painter::CG_Painter(QWidget *parent)
 	QAction* actionCurve_Bezier = new QAction(tr(u8"Bezier曲线"));
 	actionCurve_Bezier->setStatusTip(tr(u8"【绘制Bezier曲线】左键依次单击确定控制点，右键确定并退出"));
 	connect(actionCurve_Bezier, &QAction::triggered, this, &CG_Painter::action_to_curve_Bezier);
-	//QAction* actionClip_Liang = new QAction(tr(u8"线段裁剪②"));
-	//actionClip_Liang->setStatusTip(tr(u8"裁剪算法：Liang-Barsky （左键单击选择裁剪窗口的起点与终点；注：裁剪窗口对画布上的所有直线有效）"));
-	//connect(actionClip_Liang, &QAction::triggered, this, &CG_Painter::action_to_clip_Liang);
+	QAction* actionCurve_Bspline = new QAction(tr(u8"B-spline曲线"));
+	actionCurve_Bspline->setStatusTip(tr(u8"【绘制B-spline曲线】左键依次单击确定控制点，右键确定并退出"));
+	connect(actionCurve_Bspline, &QAction::triggered, this, &CG_Painter::action_to_curve_Bspline);
 	//曲线Menu
 	QMenu *menu2 = new QMenu(ui.menuBar);
 	menu2->setTitle(u8"曲线");
 	menu2->addAction(actionCurve_Bezier);
-	//menu2->addAction(actionClip_Liang);
+	menu2->addAction(actionCurve_Bspline);
 	ui.menuBar->addAction(menu2->menuAction());
 
 	//旋转图元Action
@@ -66,6 +67,13 @@ void CG_Painter::refreshStateLabel()
 	//状态栏展示鼠标位置
 	QString str = "(" + QString::number(mouse_x) + "," + QString::number(mouse_y) + ")";
 	statusLabel->setText(state_info + algo_info + str);
+}
+
+void CG_Painter::refresh_ColorIcon()
+{
+	QImage icon(30, 30, QImage::Format_RGB32);
+	icon.fill(nowColor);
+	ui.actionColor->setIcon(QPixmap::fromImage(icon));
 }
 
 void CG_Painter::setState(PAINTER_STATE newState)
@@ -450,13 +458,19 @@ void CG_Painter::mouseReleaseEvent(QMouseEvent * event)
 			update();
 		}
 		else if (event->button() == Qt::RightButton) {
-			FoldLine *p= myCanvas.drawFoldLine(getNewID(), curve_points);
-			myCanvas.drawCurve(getNewID(), algorithm, p);
-			for (size_t i = 0; i < curve_points.size(); i++) {
-				myCanvas.drawCtrlPoint(getNewID(), i, p);
+			if (curve_points.size() > 2) { //点的个数小于3时，曲线没有意义
+				FoldLine *p = myCanvas.drawFoldLine(getNewID(), curve_points);
+				myCanvas.drawCurve(getNewID(), algorithm, p);
+				for (size_t i = 0; i < curve_points.size(); i++) {
+					myCanvas.drawCtrlPoint(getNewID(), i, p);
+				}
+				setState(NOT_DRAWING);
+				update();
 			}
-			setState(NOT_DRAWING);
-			update();
+			else {
+				setState(NOT_DRAWING);
+				update();
+			}
 		}
 	}
 

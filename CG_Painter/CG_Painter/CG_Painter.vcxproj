@@ -107,6 +107,14 @@
     <ClInclude Include="algorithm.h" />
     <ClInclude Include="canvas.h" />
     <ClInclude Include="pixelset.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CG_Painter.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="paint-palette.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

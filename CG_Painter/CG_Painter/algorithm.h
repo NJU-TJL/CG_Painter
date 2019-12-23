@@ -43,6 +43,7 @@ bool Liang_Barsky(int &x1, int &y1, int &x2, int &y2, int xmin, int ymin, int xm
 /*曲线部分*/
 //Bezier曲线生成
 void drawCurve_Bezier(const vector<Point>& vertexs, PixelSet& myset);
-
+//B-spline曲线生成
+void drawCurve_Bspline(const vector<Point> &vertexs, PixelSet &myset);
 
 #endif // ALGORITHM_H

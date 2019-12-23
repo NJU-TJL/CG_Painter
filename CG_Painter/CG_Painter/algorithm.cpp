@@ -404,9 +404,9 @@ bool Liang_Barsky(int & x1, int & y1, int & x2, int & y2, int xmin, int ymin, in
 }
 
 /*曲线部分*/
+/*Bezier曲线生成*/
 static double **P_x = nullptr; //中间计算过程需要用到的二维数组
 static double **P_y = nullptr; //中间计算过程需要用到的二维数组
-/*Bezier曲线生成*/
 //获得参数u对应的离散点（函数调用前需要保证P已分配了足够的空间）
 Point getPoint_Bezier(double u, const vector<Point> &vertexs) {
 	//初始化
@@ -458,4 +458,53 @@ void drawCurve_Bezier(const vector<Point> &vertexs, PixelSet &myset)
 	}
 	delete[] P_x;
 	delete[] P_y;
+}
+
+/*B-spline曲线*/
+int k = 3;
+int n = 0;
+double *u;
+vector<Point> P;
+//计算λ（约定0/0=0）
+double getLambda(int i, int r, double t) {
+	if (fabs(u[i + k - r] - u[i]) <= 1e-7) {
+		return 0;
+	}
+	else {
+		return (t - u[i]) / (u[i + k - r] - u[i]);
+	}
+}
+//使用de Boor Cox递推公式来分别递归计算点的x，y坐标
+double deBoorCox_X(int i, int r, double t) {
+	if (r == 0) return P[i].x;
+	else {
+		return getLambda(i, r, t)*deBoorCox_X(i, r - 1, t) + (1 - getLambda(i, r, t))*deBoorCox_X(i - 1, r - 1, t);
+	}
+}
+double deBoorCox_Y(int i, int r, double t) {
+	if (r == 0) return P[i].y;
+	else {
+		return getLambda(i, r, t)*deBoorCox_Y(i, r - 1, t) + (1 - getLambda(i, r, t))*deBoorCox_Y(i - 1, r - 1, t);
+	}
+}
+//根据参数得出B-spline曲线
+void drawCurve_Bspline(const vector<Point> &vertexs, PixelSet &myset) {
+	if (vertexs.size() <= 1) return;
+	//初始化
+	P = vertexs;
+	n = vertexs.size() - 1;
+	u = new double[n + k + 2];
+	for (int i = 0; i <= n + k + 1; i++) {
+		u[i] = i;
+	}
+	//在区间u(k-1)~u(n+1)，分割区间计算
+	double step = 0.0005;
+	for (int j = k - 1; j < n + 1; j++) {
+		for (double t = u[j]; t < u[j + 1]; t += step) {
+			int x = qRound(deBoorCox_X(j, k - 1, t));
+			int y = qRound(deBoorCox_Y(j, k - 1, t));
+			myset.add(x, y);
+		}
+	}
+	delete[] u;
 }

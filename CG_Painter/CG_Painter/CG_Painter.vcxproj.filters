@@ -66,5 +66,17 @@
     <ClInclude Include="canvas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CG_Painter.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="paint-palette.ico" />
   </ItemGroup>
 </Project>

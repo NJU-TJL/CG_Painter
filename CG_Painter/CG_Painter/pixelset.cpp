@@ -171,7 +171,7 @@ void Curve::refresh()
 		drawCurve_Bezier(vertexs, *this);
 	}
 	else if (algorithm == B_SPLINE) {
-
+		drawCurve_Bspline(vertexs, *this);
 	}
 }
 

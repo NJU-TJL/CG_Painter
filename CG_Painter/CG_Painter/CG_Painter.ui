@@ -16,6 +16,10 @@
   <property name="windowTitle">
    <string>CG_Painter</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="CG_Painter.qrc">
+    <normaloff>:/CG_Painter/paint-palette.png</normaloff>:/CG_Painter/paint-palette.png</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="enabled">
     <bool>true</bool>

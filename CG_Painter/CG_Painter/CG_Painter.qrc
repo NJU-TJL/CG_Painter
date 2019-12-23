@@ -1,4 +1,5 @@
 <RCC>
-    <qresource prefix="CG_Painter">
+    <qresource prefix="/CG_Painter">
+        <file>paint-palette.png</file>
     </qresource>
 </RCC>
