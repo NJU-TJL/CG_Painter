@@ -3,7 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QLabel>
 #include <QColorDialog>
-#include <QFileDialog>
+#include <QInputDialog>
 #include "ui_CG_Painter.h"
 #include "canvas.h"
 
@@ -118,11 +118,12 @@ private slots:
 		refresh_ColorIcon();
 	}
 	void action_to_save() {
-		QString filename = QFileDialog::getSaveFileName(this, u8"保存路径选择", ".", u8"图片 (*.bmp)");
-		if (!filename.isNull()) {
+		bool isOK;
+		QString filename = QInputDialog::getText(NULL, u8"保存当前画布到同目录下", u8"请给当前画布起个名字：", QLineEdit::Normal, "MyCanvas", &isOK);
+		if (isOK) {
 			QImage *image = new QImage(geometry().width(), geometry().height(), QImage::Format_RGB888);
 			myCanvas.getIamge_forSave(image);
-			(*image).save(filename);
+			(*image).save(filename + ".bmp");
 		}
 	}
 	void action_to_delete() {
