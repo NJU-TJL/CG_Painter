@@ -99,6 +99,16 @@ void Canvas::getIamge(QImage *image)
 	}
 }
 
+void Canvas::getIamge_forSave(QImage * image)
+{
+	clearPixelSet();//输出前，先清除无效图元
+	image->fill(Qt::white);
+	for (int i = 0; i < pixelsets.size(); i++) {
+		if (pixelsets[i]->type == LINE || pixelsets[i]->type == POLYGON || pixelsets[i]->type == ELLIPSE || pixelsets[i]->type == CURVE)
+			pixelsets[i]->paint(image);
+	}
+}
+
 void Canvas::translate(int id, int dx, int dy)
 {
 	for (size_t i = 0; i < pixelsets.size(); i++) {

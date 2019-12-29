@@ -121,7 +121,7 @@ private slots:
 		QString filename = QFileDialog::getSaveFileName(this, u8"保存路径选择", ".", u8"图片 (*.bmp)");
 		if (!filename.isNull()) {
 			QImage *image = new QImage(geometry().width(), geometry().height(), QImage::Format_RGB888);
-			myCanvas.getIamge(image);
+			myCanvas.getIamge_forSave(image);
 			(*image).save(filename);
 		}
 	}

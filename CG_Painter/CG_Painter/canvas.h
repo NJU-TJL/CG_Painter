@@ -25,6 +25,8 @@ public:
 	void setColor(QColor icolor) { color = icolor; }
 	//将当前所有图元输出到画布，且跳过超出画布边界的点
 	void getIamge(QImage *image);
+	//保存画布为文件
+	void getIamge_forSave(QImage *image);
 
 	//画一条直线
 	void drawLine(int id, int x1, int y1, int x2, int y2, ALGORITHM algorithm);
