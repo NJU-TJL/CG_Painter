@@ -2,10 +2,15 @@
 
 下载地址：https://github.com/NJU-TJL/CG_Painter/releases/
 
+****
+
+**Copyright © 2020 NJU-TJL**  
+
+**[开放源代码许可](https://github.com/NJU-TJL/CG_Painter/blob/master/LICENSE)**
+
 **转载请注明原作者：https://github.com/NJU-TJL/CG_Painter**  
-（使用Apache 2.0开源协议）
 
-
+****
 
 算法实现、设计过程详情，请见于报告（[点击下载](https://github.com/NJU-TJL/CG_Painter/raw/master/doc/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%20%E7%BB%98%E5%9B%BE%E7%B3%BB%E7%BB%9F_%E8%AE%BE%E8%AE%A1%E6%8A%A5%E5%91%8A.pdf)）：
 
