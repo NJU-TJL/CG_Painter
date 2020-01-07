@@ -1,5 +1,9 @@
 # 计算机图形学 - 绘图系统
 
+**基于 Qt5 ( C++ ) 开发的 计算机图形学 - 绘图系统** (计算机图形学 课程作业)
+
+核心算法模块，完成了直线生成（DDA算法、Bresenham算法），多边形生成，椭圆生成（中点椭圆算法），曲线生成（Bezier和B-spline），图元平移、旋转、缩放，线段剪裁（Cohen-Sutherland算法、Liang-Barsky算法）的实现。GUI程序实现了较为友好的用户交互UI，可以较为方便地画直线、多边形、椭圆、曲线，且可以保存画布、设定颜色、对所有类型的图元进行平移、旋转、缩放、删除。
+
 下载地址：https://github.com/NJU-TJL/CG_Painter/releases/
 
 ****
@@ -11,6 +15,8 @@
 **转载请注明原作者：https://github.com/NJU-TJL/CG_Painter**  
 
 ****
+
+若**图片加载失败**，可访问CSDN博客查看：https://blog.csdn.net/Kingsman_T/article/details/103880164
 
 算法实现、设计过程详情，请见于报告（[点击下载](https://github.com/NJU-TJL/CG_Painter/raw/master/doc/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%20%E7%BB%98%E5%9B%BE%E7%B3%BB%E7%BB%9F_%E8%AE%BE%E8%AE%A1%E6%8A%A5%E5%91%8A.pdf)）：
 
